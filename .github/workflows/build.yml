@@ -1,0 +1,97 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Rebuild and re-upload the installer for this existing release tag (e.g. v0.1.0). Leave empty for a test build.'
+        required: false
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    env:
+      DOTNET_NOLOGO: true
+      DOTNET_CLI_TELEMETRY_OPTOUT: true
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag || github.ref }}
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Work out version
+        id: ver
+        shell: pwsh
+        run: |
+          $tag = '${{ inputs.tag }}'
+          if (-not $tag -and '${{ github.ref_type }}' -eq 'tag') { $tag = '${{ github.ref_name }}' }
+          if ($tag) { $v = $tag.TrimStart('v') } else {
+            [xml]$p = Get-Content src/Architectus/Architectus.csproj
+            $v = ($p.Project.PropertyGroup | Where-Object { $_.Version } | Select-Object -First 1).Version
+          }
+          "version=$v" >> $env:GITHUB_OUTPUT
+          "tag=$tag" >> $env:GITHUB_OUTPUT
+          Write-Host "Version $v  Tag '$tag'"
+
+      - name: Embed official meta-prompt (secret)
+        shell: pwsh
+        env:
+          ARCHITECTUS_META_PROMPT: ${{ github.event_name != 'pull_request' && secrets.ARCHITECTUS_META_PROMPT || '' }}
+        run: ./tools/Embed-MetaPrompt.ps1
+
+      - name: Publish app
+        shell: pwsh
+        run: >
+          dotnet publish src/Architectus/Architectus.csproj
+          -c Release -r win-x64 -p:Platform=x64 --self-contained true
+          -p:Version=${{ steps.ver.outputs.version }}
+          -o publish
+
+      - name: Remove generated secret file
+        if: always()
+        shell: pwsh
+        run: Remove-Item -Recurse -Force src/Architectus/Generated -ErrorAction SilentlyContinue
+
+      - name: Install Inno Setup
+        shell: pwsh
+        run: |
+          if (-not (Test-Path "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe")) { choco install innosetup -y --no-progress }
+
+      - name: Build setup wizard
+        shell: pwsh
+        run: |
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" /DAppVersion=${{ steps.ver.outputs.version }} /DSourceDir=..\publish installer\Architectus.iss
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Get-ChildItem dist
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Architectus-Setup-${{ steps.ver.outputs.version }}
+          path: dist/*.exe
+
+      - name: Publish GitHub release
+        if: steps.ver.outputs.tag != ''
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $tag = '${{ steps.ver.outputs.tag }}'
+          $file = Get-ChildItem dist/*.exe | Select-Object -First 1
+          gh release view $tag 2>$null
+          if ($LASTEXITCODE -eq 0) {
+            gh release upload $tag $file.FullName --clobber
+          } else {
+            $notes = if (Test-Path "release-notes/$tag.md") { "release-notes/$tag.md" } else { $null }
+            if ($notes) { gh release create $tag $file.FullName --title "Architectus $tag" --notes-file $notes }
+            else { gh release create $tag $file.FullName --title "Architectus $tag" --generate-notes }
+          }

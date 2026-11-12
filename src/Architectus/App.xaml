@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Application
+    x:Class="Architectus.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <ResourceDictionary.ThemeDictionaries>
+                <!-- Architectus "blueprint" accent -->
+                <ResourceDictionary x:Key="Light">
+                    <Color x:Key="SystemAccentColor">#2F4FC4</Color>
+                    <Color x:Key="SystemAccentColorLight1">#3D5FD6</Color>
+                    <Color x:Key="SystemAccentColorLight2">#5A78E0</Color>
+                    <Color x:Key="SystemAccentColorLight3">#8099EA</Color>
+                    <Color x:Key="SystemAccentColorDark1">#2843AB</Color>
+                    <Color x:Key="SystemAccentColorDark2">#203790</Color>
+                    <Color x:Key="SystemAccentColorDark3">#182A70</Color>
+                    <SolidColorBrush x:Key="BlueprintLineBrush" Color="#142F4FC4" />
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <Color x:Key="SystemAccentColor">#6E8BFF</Color>
+                    <Color x:Key="SystemAccentColorLight1">#86A0FF</Color>
+                    <Color x:Key="SystemAccentColorLight2">#A3B6FF</Color>
+                    <Color x:Key="SystemAccentColorLight3">#C2CEFF</Color>
+                    <Color x:Key="SystemAccentColorDark1">#5873E6</Color>
+                    <Color x:Key="SystemAccentColorDark2">#455DC8</Color>
+                    <Color x:Key="SystemAccentColorDark3">#3448A6</Color>
+                    <SolidColorBrush x:Key="BlueprintLineBrush" Color="#1A6E8BFF" />
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+
+            <Style x:Key="CardBorderStyle" TargetType="Border">
+                <Setter Property="Background" Value="{ThemeResource CardBackgroundFillColorDefaultBrush}" />
+                <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeColorDefaultBrush}" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="CornerRadius" Value="8" />
+                <Setter Property="Padding" Value="20" />
+            </Style>
+
+            <Style x:Key="PageTitleStyle" TargetType="TextBlock" BasedOn="{StaticResource TitleTextBlockStyle}">
+                <Setter Property="Margin" Value="0,0,0,4" />
+            </Style>
+
+            <Style x:Key="CaptionStyle" TargetType="TextBlock" BasedOn="{StaticResource CaptionTextBlockStyle}">
+                <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondaryBrush}" />
+                <Setter Property="TextWrapping" Value="Wrap" />
+            </Style>
+
+            <Style x:Key="SectionHeaderStyle" TargetType="TextBlock" BasedOn="{StaticResource BodyStrongTextBlockStyle}">
+                <Setter Property="Margin" Value="0,24,0,8" />
+            </Style>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

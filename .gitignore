@@ -1,0 +1,9 @@
+bin/
+obj/
+publish/
+dist/
+.vs/
+*.user
+# The official meta-prompt never lives in this repo. CI generates this file from a secret.
+src/Architectus/Generated/
+metaprompt.private.txt
