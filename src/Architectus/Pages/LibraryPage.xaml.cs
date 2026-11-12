@@ -70,14 +70,14 @@ public sealed partial class LibraryPage : Page
     private void Detail_Changed(object sender, TextChangedEventArgs e)
     {
         if (_loading || _selected is null) return;
-        SaveChangesButton.IsEnabled = TitleBox.Text != _selected.Title || PromptBox.Text != _selected.Prompt;
+        SaveChangesButton.IsEnabled = TitleBox.Text != _selected.Title || TextUtil.Newlines(PromptBox.Text) != TextUtil.Newlines(_selected.Prompt);
     }
 
     private void SaveChanges_Click(object sender, RoutedEventArgs e)
     {
         if (_selected is null) return;
         _selected.Title = string.IsNullOrWhiteSpace(TitleBox.Text) ? "Untitled prompt" : TitleBox.Text.Trim();
-        _selected.Prompt = PromptBox.Text;
+        _selected.Prompt = TextUtil.Newlines(PromptBox.Text);
         _selected.UpdatedUtc = DateTime.UtcNow;
         LibraryStore.Save();
         Reload(_selected.Id);
@@ -103,7 +103,7 @@ public sealed partial class LibraryPage : Page
     private async void Copy_Click(object sender, RoutedEventArgs e)
     {
         var data = new DataPackage();
-        data.SetText(PromptBox.Text);
+        data.SetText(TextUtil.Newlines(PromptBox.Text));
         Clipboard.SetContent(data);
         Clipboard.Flush();
         CopyIcon.Glyph = "";

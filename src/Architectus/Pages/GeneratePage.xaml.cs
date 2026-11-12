@@ -139,7 +139,7 @@ public sealed partial class GeneratePage : Page
     private async void Copy_Click(object sender, RoutedEventArgs e)
     {
         var data = new DataPackage();
-        data.SetText(OutputBox.Text);
+        data.SetText(TextUtil.Newlines(OutputBox.Text));
         Clipboard.SetContent(data);
         Clipboard.Flush();
 
@@ -175,8 +175,8 @@ public sealed partial class GeneratePage : Page
         LibraryStore.Add(new LibraryItem
         {
             Title = string.IsNullOrWhiteSpace(titleBox.Text) ? SuggestTitle(rough) : titleBox.Text.Trim(),
-            RoughInput = rough,
-            Prompt = OutputBox.Text,
+            RoughInput = TextUtil.Newlines(rough),
+            Prompt = TextUtil.Newlines(OutputBox.Text),
             Provider = string.IsNullOrEmpty(_lastProvider) ? s.Provider : _lastProvider,
             Model = string.IsNullOrEmpty(_lastModel) ? s.ModelFor(s.Provider) : _lastModel,
         });
