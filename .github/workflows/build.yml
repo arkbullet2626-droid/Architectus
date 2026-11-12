@@ -29,19 +29,26 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
+      # Releases: bump <Version> in Architectus.csproj and push to main. If no release
+      # exists for v<Version> yet, this workflow creates the tag + release automatically.
+      # Re-running with the "tag" input rebuilds and replaces that release's installer.
       - name: Work out version
         id: ver
         shell: pwsh
         run: |
+          $mode = 'test'
           $tag = '${{ inputs.tag }}'
-          if (-not $tag -and '${{ github.ref_type }}' -eq 'tag') { $tag = '${{ github.ref_name }}' }
-          if ($tag) { $v = $tag.TrimStart('v') } else {
+          if ($tag) { $mode = 'replace'; $v = $tag.TrimStart('v') }
+          elseif ('${{ github.ref_type }}' -eq 'tag') { $tag = '${{ github.ref_name }}'; $v = $tag.TrimStart('v'); $mode = 'new' }
+          else {
             [xml]$p = Get-Content src/Architectus/Architectus.csproj
             $v = ($p.Project.PropertyGroup | Where-Object { $_.Version } | Select-Object -First 1).Version
+            if ('${{ github.event_name }}' -eq 'push' -and '${{ github.ref_name }}' -eq 'main') { $tag = "v$v"; $mode = 'new' }
           }
           "version=$v" >> $env:GITHUB_OUTPUT
           "tag=$tag" >> $env:GITHUB_OUTPUT
-          Write-Host "Version $v  Tag '$tag'"
+          "mode=$mode" >> $env:GITHUB_OUTPUT
+          Write-Host "Version $v  Tag '$tag'  Mode $mode"
 
       - name: Embed official meta-prompt (secret)
         shell: pwsh
@@ -80,18 +87,24 @@ jobs:
           path: dist/*.exe
 
       - name: Publish GitHub release
-        if: steps.ver.outputs.tag != ''
+        if: steps.ver.outputs.mode != 'test'
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           $tag = '${{ steps.ver.outputs.tag }}'
+          $mode = '${{ steps.ver.outputs.mode }}'
           $file = Get-ChildItem dist/*.exe | Select-Object -First 1
-          gh release view $tag 2>$null
-          if ($LASTEXITCODE -eq 0) {
-            gh release upload $tag $file.FullName --clobber
+          gh release view $tag --repo '${{ github.repository }}' *> $null
+          $exists = $LASTEXITCODE -eq 0
+          if ($exists -and $mode -eq 'replace') {
+            gh release upload $tag $file.FullName --clobber --repo '${{ github.repository }}'
+          } elseif ($exists) {
+            Write-Host "Release $tag already exists; bump <Version> to publish a new one. Skipping."
           } else {
-            $notes = if (Test-Path "release-notes/$tag.md") { "release-notes/$tag.md" } else { $null }
-            if ($notes) { gh release create $tag $file.FullName --title "Architectus $tag" --notes-file $notes }
-            else { gh release create $tag $file.FullName --title "Architectus $tag" --generate-notes }
+            $sha = (git rev-parse HEAD).Trim()
+            $notes = "release-notes/$tag.md"
+            if (Test-Path $notes) { gh release create $tag $file.FullName --target $sha --title "Architectus $tag" --notes-file $notes --repo '${{ github.repository }}' }
+            else { gh release create $tag $file.FullName --target $sha --title "Architectus $tag" --generate-notes --repo '${{ github.repository }}' }
           }
+          exit 0
