@@ -19,7 +19,7 @@ public sealed partial class SettingsPage : Page
         var s = SettingsStore.Current;
         foreach (var p in ProviderCatalog.All)
         {
-            ProviderChoice.Items.Add(new RadioButton { Content = p.DisplayName, Tag = p.Id });
+            ProviderChoice.Items.Add(new RadioButton { Content = p.FreeNote is null ? p.DisplayName : $"{p.DisplayName} (free tier)", Tag = p.Id });
             var card = new ProviderCard(p, this);
             _cards[p.Id] = card;
             ProviderCards.Children.Add(card.Root);
@@ -113,11 +113,35 @@ public sealed partial class SettingsPage : Page
             var header = new Grid { Padding = new Thickness(0, 12, 0, 12) };
             header.ColumnDefinitions.Add(new ColumnDefinition());
             header.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-            header.Children.Add(new TextBlock { Text = info.DisplayName, VerticalAlignment = VerticalAlignment.Center });
+            var title = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
+            title.Children.Add(new TextBlock { Text = info.DisplayName, VerticalAlignment = VerticalAlignment.Center });
+            if (info.FreeNote is not null)
+            {
+                title.Children.Add(new Border
+                {
+                    Background = (Brush)Application.Current.Resources["AccentFillColorDefaultBrush"],
+                    CornerRadius = new CornerRadius(4),
+                    Padding = new Thickness(6, 1, 6, 2),
+                    VerticalAlignment = VerticalAlignment.Center,
+                    Child = new TextBlock
+                    {
+                        Text = "FREE",
+                        FontSize = 11,
+                        FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
+                        Foreground = (Brush)Application.Current.Resources["TextOnAccentFillColorPrimaryBrush"],
+                    },
+                });
+            }
+            header.Children.Add(title);
             Grid.SetColumn(_badge, 1);
             header.Children.Add(_badge);
 
-            var link = new HyperlinkButton { Content = $"Get a {info.DisplayName} key", NavigateUri = new Uri(info.KeyUrl), Padding = new Thickness(0) };
+            var link = new HyperlinkButton
+            {
+                Content = info.FreeNote is null ? $"Get a {info.DisplayName} key" : $"Get a free {info.DisplayName} key",
+                NavigateUri = new Uri(info.KeyUrl),
+                Padding = new Thickness(0),
+            };
 
             var keyButtons = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
             keyButtons.Children.Add(_saveKey);
@@ -137,6 +161,27 @@ public sealed partial class SettingsPage : Page
             statusRow.Children.Add(_status);
 
             var body = new StackPanel { Spacing = 10, HorizontalAlignment = HorizontalAlignment.Left };
+            if (info.FreeNote is not null)
+            {
+                body.Children.Add(new InfoBar
+                {
+                    IsOpen = true,
+                    IsClosable = false,
+                    Severity = InfoBarSeverity.Success,
+                    Title = "Free to use",
+                    Message = info.FreeNote,
+                    MaxWidth = 640,
+                });
+            }
+            else
+            {
+                body.Children.Add(new TextBlock
+                {
+                    Style = (Style)Application.Current.Resources["CaptionStyle"],
+                    MaxWidth = 640,
+                    Text = $"{info.DisplayName} API keys need prepaid credit on your API account (separate from any chat subscription).",
+                });
+            }
             body.Children.Add(_keyBox);
             body.Children.Add(keyButtons);
             body.Children.Add(link);

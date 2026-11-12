@@ -20,10 +20,11 @@
 
         <InfoBar x:Name="NoKeyBar" Grid.Row="1" Severity="Informational" IsClosable="False"
                  Title="Add an API key to get started"
-                 Message="Architectus uses your own OpenAI, Anthropic or Gemini key. It's stored in Windows Credential Manager, never in a file.">
+                 Message="Architectus uses your own Gemini, OpenAI or Anthropic key, stored in Windows Credential Manager. No key yet? Google Gemini gives free keys, no card needed.">
             <InfoBar.ActionButton>
                 <Button Content="Open Settings" Click="OpenSettings_Click" />
             </InfoBar.ActionButton>
+            <HyperlinkButton Content="Get a free Gemini key" NavigateUri="https://aistudio.google.com/apikey" Margin="0,0,0,12" />
         </InfoBar>
 
         <Grid x:Name="Panes" Grid.Row="2" ColumnSpacing="16" RowSpacing="16">

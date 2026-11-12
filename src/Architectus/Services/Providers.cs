@@ -12,7 +12,8 @@ public sealed record ProviderInfo(
     string DefaultModel,
     string[] SuggestedModels,
     string KeyHint,
-    string KeyUrl);
+    string KeyUrl,
+    string? FreeNote = null);
 
 public static class ProviderCatalog
 {
@@ -29,12 +30,15 @@ public static class ProviderCatalog
     public static readonly ProviderInfo Gemini = new(
         "gemini", "Google Gemini", "gemini-flash-lite-latest",
         new[] { "gemini-flash-lite-latest", "gemini-flash-latest" },
-        "Starts with AIza", "https://aistudio.google.com/apikey");
+        "Starts with AIza", "https://aistudio.google.com/apikey",
+        "Free option: get a key from Google AI Studio with just a Google account, no card needed. " +
+        "The free tier has request limits per minute and per day, and Google may use free-tier requests to improve its products.");
 
-    public static IReadOnlyList<ProviderInfo> All { get; } = new[] { OpenAI, Anthropic, Gemini };
+    // Gemini first: it's the free way to use Architectus.
+    public static IReadOnlyList<ProviderInfo> All { get; } = new[] { Gemini, OpenAI, Anthropic };
 
     public static ProviderInfo Get(string id) =>
-        All.FirstOrDefault(p => p.Id == id) ?? OpenAI;
+        All.FirstOrDefault(p => p.Id == id) ?? Gemini;
 
     public static IPromptProvider CreateClient(string id) => id switch
     {
@@ -90,7 +94,9 @@ internal static class Http
             400 => "The request was rejected",
             401 or 403 => "The API key was rejected — check it in Settings",
             404 => "That model wasn't found — try another model in Settings",
+            429 when provider == "Gemini" => "Gemini's usage limit was reached. On the free tier, wait a minute and try again (there's also a daily cap)",
             429 => "Rate limit or out of credit on your account",
+            402 => "Your account is out of credit. Add credit on the provider's billing page",
             >= 500 => $"{provider} is having trouble right now",
             _ => $"{provider} returned an error",
         };

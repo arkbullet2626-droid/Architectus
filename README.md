@@ -10,7 +10,8 @@ Type a rough request like *"help me write a cover letter for a barista job, I'm 
 
 ## Features
 
-- **Bring your own key** for OpenAI, Anthropic (Claude) or Google Gemini.
+- **Free with Google Gemini**: get a free key from [Google AI Studio](https://aistudio.google.com/apikey), no card needed.
+- **Or bring your own key** for OpenAI or Anthropic (Claude) (these need prepaid API credit).
 - **Streaming output**: watch the prompt appear word by word.
 - **Model picker**: defaults to fast, cheap models (a prompt usually costs a fraction of a cent), or load the full list from your account.
 - **Edit, copy, save**: tweak the result, copy it in one click, or keep it in your local library.

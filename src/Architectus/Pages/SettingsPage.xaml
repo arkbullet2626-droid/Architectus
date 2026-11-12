@@ -12,7 +12,7 @@
             <Border Style="{StaticResource CardBorderStyle}">
                 <StackPanel Spacing="8">
                     <TextBlock Style="{StaticResource CaptionStyle}"
-                               Text="Pick which service writes your prompts. Prompt rewriting is a small job, so a fast, cheap model usually costs a fraction of a cent per prompt." />
+                               Text="Pick which service writes your prompts. Google Gemini has a free tier (no card needed). OpenAI and Anthropic need prepaid credit on your API account, though a prompt usually costs a fraction of a cent." />
                     <RadioButtons x:Name="ProviderChoice" SelectionChanged="ProviderChoice_SelectionChanged" />
                 </StackPanel>
             </Border>

@@ -45,7 +45,7 @@ internal static class JsonFile
 /// <summary>Non-secret preferences only. API keys are NOT stored here — see CredentialStore.</summary>
 public sealed class AppSettings
 {
-    public string Provider { get; set; } = "openai";
+    public string Provider { get; set; } = "gemini";
     public Dictionary<string, string> Models { get; set; } = new();
     public string Theme { get; set; } = "System"; // System | Light | Dark
     public bool SeenWelcome { get; set; }
