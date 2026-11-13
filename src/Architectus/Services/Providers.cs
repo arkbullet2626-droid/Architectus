@@ -68,7 +68,8 @@ internal static class Http
 
     static Http()
     {
-        Client.DefaultRequestHeaders.UserAgent.ParseAdd("Architectus/0.1 (+https://github.com/arkbullet2626-droid/architectus)");
+        var v = typeof(Http).Assembly.GetName().Version;
+        Client.DefaultRequestHeaders.UserAgent.ParseAdd($"Architectus/{v?.Major}.{v?.Minor}.{v?.Build} (+https://github.com/arkbullet2626-droid/Architectus)");
     }
 
     public static StringContent Json(object body) =>

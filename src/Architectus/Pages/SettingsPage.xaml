@@ -43,8 +43,10 @@
                     <TextBlock x:Name="EditionText" Style="{StaticResource CaptionStyle}" />
                     <TextBlock Style="{StaticResource CaptionStyle}" Text="Free and open source under the MIT License. Made by Opifex Studios." />
                     <StackPanel Orientation="Horizontal" Spacing="16" Margin="0,6,0,0">
-                        <HyperlinkButton Content="Source code on GitHub" NavigateUri="https://github.com/arkbullet2626-droid/architectus" Padding="0" />
                         <HyperlinkButton Content="opifexstudios.ca" NavigateUri="https://opifexstudios.ca" Padding="0" />
+                        <HyperlinkButton Content="Privacy policy" NavigateUri="https://opifexstudios.ca/#architectus-privacy" Padding="0" />
+                        <HyperlinkButton Content="Source code" NavigateUri="https://github.com/arkbullet2626-droid/Architectus" Padding="0" />
+                        <HyperlinkButton Content="Report a problem" NavigateUri="https://github.com/arkbullet2626-droid/Architectus/issues" Padding="0" />
                     </StackPanel>
                 </StackPanel>
             </Border>

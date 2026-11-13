@@ -94,17 +94,20 @@ jobs:
         run: |
           $tag = '${{ steps.ver.outputs.tag }}'
           $mode = '${{ steps.ver.outputs.mode }}'
-          $file = Get-ChildItem dist/*.exe | Select-Object -First 1
+          Copy-Item branding/architectus-logo.png, branding/architectus-mark.svg, branding/architectus-icon.png dist/
+          $files = Get-ChildItem dist -File | Where-Object { $_.Name -ne 'SHA256SUMS.txt' }
+          ($files | ForEach-Object { "$((Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower())  $($_.Name)" }) -join "`n" | Set-Content dist/SHA256SUMS.txt -NoNewline
+          $assets = (Get-ChildItem dist -File).FullName
           gh release view $tag --repo '${{ github.repository }}' *> $null
           $exists = $LASTEXITCODE -eq 0
           if ($exists -and $mode -eq 'replace') {
-            gh release upload $tag $file.FullName --clobber --repo '${{ github.repository }}'
+            gh release upload $tag @assets --clobber --repo '${{ github.repository }}'
           } elseif ($exists) {
             Write-Host "Release $tag already exists; bump <Version> to publish a new one. Skipping."
           } else {
             $sha = (git rev-parse HEAD).Trim()
             $notes = "release-notes/$tag.md"
-            if (Test-Path $notes) { gh release create $tag $file.FullName --target $sha --title "Architectus $tag" --notes-file $notes --repo '${{ github.repository }}' }
-            else { gh release create $tag $file.FullName --target $sha --title "Architectus $tag" --generate-notes --repo '${{ github.repository }}' }
+            if (Test-Path $notes) { gh release create $tag @assets --target $sha --title "Architectus $tag" --notes-file $notes --repo '${{ github.repository }}' }
+            else { gh release create $tag @assets --target $sha --title "Architectus $tag" --generate-notes --repo '${{ github.repository }}' }
           }
           exit 0

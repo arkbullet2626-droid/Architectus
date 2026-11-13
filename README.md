@@ -19,7 +19,7 @@ Type a rough request like *"help me write a cover letter for a barista job, I'm 
 
 ## Download
 
-Grab `Architectus-Setup-x.y.z.exe` from [Releases](https://github.com/arkbullet2626-droid/architectus/releases/latest). Windows 10 (1809+) or Windows 11, 64-bit.
+**[Download Architectus-Setup.exe](https://github.com/arkbullet2626-droid/Architectus/releases/latest/download/Architectus-Setup.exe)** (always the latest version), or see [all releases](https://github.com/arkbullet2626-droid/Architectus/releases). Windows 10 (1809+) or Windows 11, 64-bit.
 
 ## How your API keys are stored
 
