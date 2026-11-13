@@ -28,8 +28,8 @@ public static class ProviderCatalog
         "Starts with sk-ant-", "https://console.anthropic.com/settings/keys");
 
     public static readonly ProviderInfo Gemini = new(
-        "gemini", "Google Gemini", "gemini-flash-lite-latest",
-        new[] { "gemini-flash-lite-latest", "gemini-flash-latest" },
+        "gemini", "Google Gemini", "gemini-flash-latest",
+        new[] { "gemini-flash-latest", "gemini-flash-lite-latest" },
         "Starts with AIza", "https://aistudio.google.com/apikey",
         "Free option: get a key from Google AI Studio with just a Google account, no card needed. " +
         "The free tier has request limits per minute and per day, and Google may use free-tier requests to improve its products.");
