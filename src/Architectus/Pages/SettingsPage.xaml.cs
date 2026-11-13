@@ -27,7 +27,6 @@ public sealed partial class SettingsPage : Page
         ProviderChoice.SelectedIndex = Math.Max(0, ProviderCatalog.All.ToList().FindIndex(p => p.Id == s.Provider));
         _cards[ProviderCatalog.Get(s.Provider).Id].Root.IsExpanded = true;
 
-        ThemeBox.SelectedItem = s.Theme;
 
         var v = Assembly.GetExecutingAssembly().GetName().Version;
         VersionText.Text = $"Architectus {v?.Major}.{v?.Minor}.{v?.Build}";
@@ -47,14 +46,6 @@ public sealed partial class SettingsPage : Page
             SettingsStore.Save();
             foreach (var (pid, card) in _cards) card.Root.IsExpanded = pid == id;
         }
-    }
-
-    private void Theme_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-        if (_loading || ThemeBox.SelectedItem is not string theme) return;
-        SettingsStore.Current.Theme = theme;
-        SettingsStore.Save();
-        App.Window?.ApplyTheme(theme);
     }
 
     private void OpenCredMan_Click(object sender, RoutedEventArgs e) =>
@@ -119,7 +110,7 @@ public sealed partial class SettingsPage : Page
             {
                 title.Children.Add(new Border
                 {
-                    Background = (Brush)Application.Current.Resources["AccentFillColorDefaultBrush"],
+                    Background = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 0x5B, 0xE3, 0xA6)),
                     CornerRadius = new CornerRadius(4),
                     Padding = new Thickness(6, 1, 6, 2),
                     VerticalAlignment = VerticalAlignment.Center,
@@ -128,7 +119,7 @@ public sealed partial class SettingsPage : Page
                         Text = "FREE",
                         FontSize = 11,
                         FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
-                        Foreground = (Brush)Application.Current.Resources["TextOnAccentFillColorPrimaryBrush"],
+                        Foreground = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 0x0B, 0x09, 0x06)),
                     },
                 });
             }

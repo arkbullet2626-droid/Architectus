@@ -5,11 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     Title="Architectus">
 
-    <Window.SystemBackdrop>
-        <MicaBackdrop />
-    </Window.SystemBackdrop>
-
-    <Grid x:Name="RootGrid">
+    <Grid x:Name="RootGrid" Background="{ThemeResource OpxBgBrush}" RequestedTheme="Dark">
         <Grid.RowDefinitions>
             <RowDefinition Height="48" />
             <RowDefinition Height="*" />
@@ -26,6 +22,9 @@
             <TextBlock Grid.Column="1" Text="Architectus" VerticalAlignment="Center"
                        Style="{StaticResource CaptionTextBlockStyle}" />
         </Grid>
+        <!-- Thin amber-to-orange glow line, echoing the website header -->
+        <Border Height="1" VerticalAlignment="Bottom" Opacity="0.55"
+                Background="{ThemeResource OpxGlowLineBrush}" IsHitTestVisible="False" />
 
         <NavigationView x:Name="Nav" Grid.Row="1"
                         IsBackButtonVisible="Collapsed"

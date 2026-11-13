@@ -25,7 +25,7 @@ public sealed partial class MainWindow : Window
         }
         catch { /* cosmetic only */ }
 
-        ApplyTheme(SettingsStore.Current.Theme);
+        StyleTitleBar();
         Nav.SelectedItem = GenerateItem;
     }
 
@@ -36,22 +36,20 @@ public sealed partial class MainWindow : Window
         AppWindow.Move(new PointInt32(area.X + (area.Width - size.Width) / 2, area.Y + (area.Height - size.Height) / 2));
     }
 
-    public void ApplyTheme(string theme)
+    /// <summary>Caption buttons in the Opifex palette (the app is always dark).</summary>
+    private void StyleTitleBar()
     {
-        RootGrid.RequestedTheme = theme switch
-        {
-            "Light" => ElementTheme.Light,
-            "Dark" => ElementTheme.Dark,
-            _ => ElementTheme.Default,
-        };
-        // Keep caption buttons readable on the custom title bar.
         try
         {
             var tb = AppWindow.TitleBar;
-            bool dark = RootGrid.ActualTheme == ElementTheme.Dark;
-            tb.ButtonForegroundColor = dark ? Microsoft.UI.Colors.White : Microsoft.UI.Colors.Black;
             tb.ButtonBackgroundColor = Microsoft.UI.Colors.Transparent;
             tb.ButtonInactiveBackgroundColor = Microsoft.UI.Colors.Transparent;
+            tb.ButtonForegroundColor = Windows.UI.Color.FromArgb(255, 0xF2, 0xEB, 0xDD);
+            tb.ButtonInactiveForegroundColor = Windows.UI.Color.FromArgb(255, 0xA3, 0x96, 0x7E);
+            tb.ButtonHoverBackgroundColor = Windows.UI.Color.FromArgb(255, 0x1C, 0x17, 0x0F);
+            tb.ButtonHoverForegroundColor = Windows.UI.Color.FromArgb(255, 0xF2, 0xB5, 0x44);
+            tb.ButtonPressedBackgroundColor = Windows.UI.Color.FromArgb(255, 0x2E, 0x26, 0x17);
+            tb.ButtonPressedForegroundColor = Windows.UI.Color.FromArgb(255, 0xF2, 0xEB, 0xDD);
         }
         catch { }
     }

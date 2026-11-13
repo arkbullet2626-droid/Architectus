@@ -36,22 +36,6 @@
                 </StackPanel>
             </Border>
 
-            <TextBlock Text="Appearance" Style="{StaticResource SectionHeaderStyle}" />
-            <Border Style="{StaticResource CardBorderStyle}">
-                <Grid ColumnSpacing="12">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Text="Theme" VerticalAlignment="Center" />
-                    <ComboBox x:Name="ThemeBox" Grid.Column="1" MinWidth="160" SelectionChanged="Theme_SelectionChanged">
-                        <x:String>System</x:String>
-                        <x:String>Light</x:String>
-                        <x:String>Dark</x:String>
-                    </ComboBox>
-                </Grid>
-            </Border>
-
             <TextBlock Text="About" Style="{StaticResource SectionHeaderStyle}" />
             <Border Style="{StaticResource CardBorderStyle}">
                 <StackPanel Spacing="6">
